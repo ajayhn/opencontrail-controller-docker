@@ -17,13 +17,20 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes contrail-opens
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes contrail-openstack-webui nodejs=0.8.15-1contrail1
 
 # extra things for docker env
+RUN cp /etc/contrail/supervisord_openstack_files/* /etc/contrail/supervisord_config_files/
+RUN cp /etc/contrail/supervisord_control_files/* /etc/contrail/supervisord_config_files/
+RUN cp /etc/contrail/supervisord_webui_files/* /etc/contrail/supervisord_config_files/
+RUN cp /etc/contrail/supervisord_analytics_files/* /etc/contrail/supervisord_config_files/
 ADD rabbitmq.sh /etc/init/rabbitmq.sh
 ADD supervisord-rabbitmq.ini /etc/contrail/supervisord_config_files/rabbitmq-server.ini
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes fabric contrail-fabric-utils
+ADD supervisord-zookeeper.ini /etc/contrail/supervisord_config_files/supervisord-zookeeper.ini
+ADD supervisord-cassandra.ini /etc/contrail/supervisord_config_files/supervisord-cassandra.ini
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes fabric openssh-server
 ADD supervisord-sshd.ini /etc/contrail/supervisord_config_files/supervisord-sshd.ini
 RUN mkdir -p /var/run/sshd
 
-#CMD ls -l /etc/contrail/supervisord_config.conf
-#ENTRYPOINT /usr/bin/supervisord --nodaemon -c /etc/contrail/supervisord_config.conf
+#ADD temp-key.pub /root/.ssh/authorized_keys
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes fabric contrail-fabric-utils
+
+ENTRYPOINT /usr/bin/supervisord --nodaemon -c /etc/contrail/supervisord_config.conf
