@@ -1,0 +1,31 @@
+  /etc/cassandra/cassandra.yaml
+  cassandra.yaml.template
+
+  /etc/cassandra/cassandra-env.sh
+  cassandra-env.sh.template
+
+
+  /etc/contrail/database_nodemgr_param
+  database_nodemgr_param.template
+
+  /etc/contrail/contrail-database-nodemgr.conf
+  contrail-database-nodemgr.conf.template
+
+  /etc/zookeeper/conf/zoo.cfg
+  zoo.cfg.template
+
+  /etc/zookeeper/conf/log4j.properties
+  zoo_log4j.properties.template
+
+  /etc/zookeeper/conf/environment
+  zoo_environment.template
+
+  /var/lib/zookeeper/myid
+  zookeeper_myid.template
+
+  /etc/contrail/dns/contrail-named.conf
+  contrail-named.conf.template
+
+  /etc/contrail/dns/contrail-rndc.conf
+  contrail-rndc.conf.template
+

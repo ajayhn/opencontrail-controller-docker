@@ -1,0 +1,2 @@
+[DISCOVERY]
+server=$CONTRAIL_contrail_vip
