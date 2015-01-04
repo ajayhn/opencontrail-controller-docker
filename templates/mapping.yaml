@@ -23,6 +23,13 @@
   /var/lib/zookeeper/myid
   zookeeper_myid.template
 
+  /etc/contrail/service.token
+  service.token.template
+  perms: 400
+
+  /etc/nova/nova.conf
+  nova.conf.template
+
   /etc/contrail/dns/contrail-named.conf
   contrail-named.conf.template
 

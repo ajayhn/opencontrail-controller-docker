@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -x
+
+# chkconfig: 2345 99 01
+# description: Juniper Network Virtualization API
+
+if [ "${1}" == "restart" ]
+then
+    supervisorctl -s unix:///tmp/supervisord_config.sock ${1} neutron-server
+elif [ "${1}" == "status" ]
+then
+    supervisorctl -s unix:///tmp/supervisord_config.sock ${1} neutron-server
+fi
+
