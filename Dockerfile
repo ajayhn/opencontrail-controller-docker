@@ -104,9 +104,47 @@ RUN /usr/bin/supervisord -c /etc/contrail/supervisord_control.conf && \
     /usr/sbin/sshd && \
     cd /opt/contrail/utils && fab setup_control -i /root/.ssh/id_rsa
 
+ADD service-supervisor-analytics /etc/init.d/supervisor-analytics
+RUN /usr/bin/supervisord -c /etc/contrail/supervisord_analytics.conf && \
+    service redis-server start && \
+    service mysql start && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_openstack.conf && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_config.conf && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_support_service.conf && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_database.conf && \
+    /usr/sbin/sshd && \
+    cd /opt/contrail/utils && fab setup_collector -i /root/.ssh/id_rsa
+
+ADD service-supervisor-webui /etc/init.d/supervisor-webui
+RUN /usr/bin/supervisord -c /etc/contrail/supervisord_webui.conf && \
+    service mysql start && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_openstack.conf && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_config.conf && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_support_service.conf && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_database.conf && \
+    /usr/sbin/sshd && \
+    cd /opt/contrail/utils && fab setup_webui -i /root/.ssh/id_rsa
+
 RUN locale-gen en_US.UTF-8
 
+# for testbed template to instance
+RUN pip install cogapp
+ADD testbed_template.py /opt/contrail/utils/fabfile/testbeds/testbed_template.py
+
 ADD pre-start-fixups.sh /etc/contrail/pre-start-fixups.sh
+RUN /etc/contrail/pre-start-fixups.sh && \
+    service haproxy start && \
+    service mysql start && \
+    service memcached start && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_openstack.conf && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_config.conf && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_support_service.conf && \
+    /usr/bin/supervisord -c /etc/contrail/supervisord_database.conf && \
+    /usr/sbin/sshd && \
+    sleep 120 && \
+    cd /opt/contrail/utils && fab prov_metadata_services -i /root/.ssh/id_rsa && \
+    cd /opt/contrail/utils && fab prov_encap_type -i /root/.ssh/id_rsa
+
 ENTRYPOINT /etc/contrail/pre-start-fixups.sh && \
            service haproxy start && \
            service mysql start && \
@@ -114,5 +152,9 @@ ENTRYPOINT /etc/contrail/pre-start-fixups.sh && \
            /usr/bin/supervisord -c /etc/contrail/supervisord_openstack.conf && \
            /usr/bin/supervisord -c /etc/contrail/supervisord_support_service.conf && \
            /usr/bin/supervisord -c /etc/contrail/supervisord_config.conf && \
+           /usr/bin/supervisord -c /etc/contrail/supervisord_control.conf && \
            /usr/bin/supervisord -c /etc/contrail/supervisord_database.conf && \
+           service redis-server start && \
+           /usr/bin/supervisord -c /etc/contrail/supervisord_analytics.conf && \
+           /usr/bin/supervisord -c /etc/contrail/supervisord_webui.conf && \
            tail -f /dev/null
